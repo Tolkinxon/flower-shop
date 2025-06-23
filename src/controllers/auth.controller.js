@@ -5,8 +5,12 @@ class AuthController {
     async REGISTER(req, res){
         try {
             const newUser = req.body;
-            const [[findUser]] = await db.query(`SELECT email, password FROM users WHERE email=?`, [newUser.email]);
-                     
+            const [[findUser]] = await db.query(`SELECT email FROM users WHERE email=?`, [newUser.email]);
+            if(findUser) throw new ClientError('This user already exists!');
+            
+            await db.query(`INSERT INTO users(first_name, last_name, phone, email, password, role_id) VALUES (?,?,?,?,?,?)`, 
+                  [newUser.first_name, newUser.last_name, newUser.phone, newUser.email, newUser.password, newUser.role_id]);
+            res.json({message: 'User successfully added', status: 200});         
             
         } catch (error) { 
             globalError(error, res);
@@ -29,7 +33,44 @@ class AuthController {
         } catch (error) {
             globalError(error, res);
         }
-    }
+    };
+
+    async DELETE(req, res){
+        try {
+            const id = req.params.id;
+            const [[findUser]] = await db.query(`SELECT id FROM users WHERE id=?`, [id]);
+            if(findUser) {
+                await db.query(`DELETE FROM users WHERE id = ?`, [id]);
+                return res.json({message: "User successfully deleted"});
+            } throw new ClientError('This user is not available');
+        } catch (error) {
+            globalError(error, res);
+        }
+    };
+
+    async UPDATE(req, res){
+        try {
+            const id = req.params.id;
+            const user = req.body;
+            const [[findUser]] = await db.query(`SELECT id FROM users WHERE id=?`, [id]);
+            if(findUser) {
+                await db.query(`UPDATE users SET first_name = ?, last_name = ?, role_id = ? WHERE id = ?`, 
+                                [user.first_name,user.last_name, user.role_id, id]);
+                return res.json({message: "User successfully updated"});
+            } throw new ClientError('This user is not available');
+        } catch (error) {
+            globalError(error, res);
+        }
+    };
+
+    async USERS(req, res){
+        try {
+            const [users] = await db.query(`SELECT * FROM users`);
+            res.json(users);     
+        } catch (error) { 
+            globalError(error, res);
+        }
+    };
 };
 
 export default new AuthController();
