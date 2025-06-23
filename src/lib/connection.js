@@ -1,7 +1,7 @@
 import { createConnection } from 'mysql2/promise';
 import c from 'config';
 
-export const db = createConnection({
+export const db = await createConnection({
     port: c.get("DB_PORT"),
     user: c.get("DB_USERNAME"),
     password: c.get("DB_PASSWORD"),
