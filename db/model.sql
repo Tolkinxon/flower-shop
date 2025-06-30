@@ -29,7 +29,7 @@ INSERT INTO users(first_name, last_name, phone, email, password, role_id) VALUES
 ('Tolkinxon', 'Soliyev', '+998774779844', 'tolkinxon@gmail.com', 'tolkinxon123', 1);
 
 CREATE TABLE IF NOT EXISTS category(
-    id INT NOT NULL,
+    id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     PRIMARY KEY(id)
 );

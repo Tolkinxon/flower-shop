@@ -1,4 +1,5 @@
-import { sign, verify } from 'jsonwebtoken';
+import pkg from 'jsonwebtoken';
+const  { sign, verify } = pkg;
 import c from 'config'; 
 
 

@@ -26,6 +26,12 @@ const email = Joi.string().email().pattern(emailPattern).required().messages({
     'any.required': 'Email is required' 
 });
 
+const phone = Joi.string().required().messages({
+    'string.base': 'Phone must be a string.',
+    'string.empty': 'Phone can not be a empty.',
+    'any.required': 'Phone is required' 
+});
+
 const password = Joi.string().max(50).min(3).required().messages({
     'string.base': 'Password must be a string.',
     'string.empty': 'Password can not be a empty.',
@@ -34,14 +40,14 @@ const password = Joi.string().max(50).min(3).required().messages({
     'any.required': 'Password is required' 
 });
 
-const role = Joi.string().valid('1', "2").required().messages({
+const role_id = Joi.string().valid('1', "2").required().messages({
     'any.only': 'Role must be either 1 (Admin) or 2 (Customer).',
     'any.required': 'Role is required field.',
     'string.base': 'Role must be a string.',
 });
 
 
-const userValidator = Joi.object({ last_name, first_name, email, password, role });
+const userValidator = Joi.object({ last_name, first_name, email, password, role_id, phone });
 const loginValidator = Joi.object({ email, password });
 export { userValidator, loginValidator };
 

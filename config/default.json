@@ -5,5 +5,8 @@
     "DB_DATABASE": "flower_shop",
     "DB_HOST": "localhost",
     "PORT": 4000,
-    "TOKEN_KEY": "securitytokenkey"
+    "TOKEN_KEY": "securitytokenkey",
+    "CLOUD_NAME": "dbf64kr96",
+    "CLOUD_APIKEY": "177449726113756",
+    "CLOUD_SECRET": "AGiQaz7UFHRbvrz0lwA9mYk7Yek"
 }
