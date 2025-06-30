@@ -1,12 +1,10 @@
 import { ClientError, globalError } from "shokhijakhon-error-handler";
 import { db } from "../lib/connection.js";
 
-class categoryController {
-    async CREATE_CATEGORY(req, res){
+class FlowerController {
+    async CREATE_FLOWER(req, res){
         try {
             const category = req.body;
-            console.log(category);
-            
        
             const [[findCategory]] = await db.query(`SELECT * FROM category WHERE name=?`, [category.name]);
             if(findCategory) throw new ClientError('This category already exists!');
@@ -49,4 +47,4 @@ class categoryController {
     };
 };
 
-export default new categoryController();
+export default new FlowerController();

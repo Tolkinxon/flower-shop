@@ -6,3 +6,4 @@ export const mainRouter = Router();
 
 mainRouter.use('/auth', authRouter);
 mainRouter.use('/category', categoryRouter);
+mainRouter.use('/flower', categoryRouter);

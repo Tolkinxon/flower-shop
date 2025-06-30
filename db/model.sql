@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS flowers(
     image_path TEXT NOT NULL,
     import_from VARCHAR(255) NOT NULL,
     is_active BOOLEAN DEFAULT false,
+    update_img_id INT,
     description TEXT NOT NULL,
     count int DEFAULT 0 NOT NULL,
     PRIMARY KEY(id),
