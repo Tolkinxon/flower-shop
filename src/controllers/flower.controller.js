@@ -4,13 +4,11 @@ import { db } from "../lib/connection.js";
 class FlowerController {
     async CREATE_FLOWER(req, res){
         try {
-            const category = req.body;
-       
-            const [[findCategory]] = await db.query(`SELECT * FROM category WHERE name=?`, [category.name]);
-            if(findCategory) throw new ClientError('This category already exists!');
-            
-            const [categoryData] = await db.query(`INSERT INTO category(name) VALUES (?)`, [category.name]);
-            res.json({message: 'Category successfully added', status: 201 });         
+            const flower = req.body;
+
+                   
+            // const [flowerData] = await db.query(`INSERT INTO flowers(name, color, price, category_id, image_path, import_from,  is_active, update_img_id, description, count) VALUES (?, )`, [category.name]);
+            // res.json({message: 'Category successfully added', status: 201 });         
             
         } catch (error) { 
             globalError(error, res);

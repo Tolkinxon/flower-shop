@@ -1,5 +1,5 @@
 import { ClientError, globalError } from "shokhijakhon-error-handler";
-import { db } from "../lib/connection.js";
+import { db, fetchQuery } from "../lib/connection.js";
 import { tokenService } from "../lib/tokenService.js";
 import { hashService } from "../lib/hash.js";
 import { loginValidator, userValidator } from "../utils/validator.js";
@@ -27,17 +27,13 @@ class AuthController {
             const user = req.body;
             const validator = loginValidator.validate(user, {abortEarly: true});
             if(validator.error) throw new ClientError(validator.error.message, 400);
-            const [[findUser]] = await db.query(`SELECT id, email, password, role_id FROM users WHERE email=?`, [user.email]);
-            if(findUser){
-                if(user.password == 'tolkinxon123' && user.email == 'tolkinxon@gmail.com' && findUser.role_id == 1){
-                    return res.json({message: "Admin successfully logged", status: 200, accessToken: tokenService.createToken({user_id: findUser.id, userAgent: req.headers['user-agent']})})
-                } else {
-                    if(!(await hashService.comparePassword(user.password, findUser.password))) throw new ClientError('User not found', 404)
-                    return res.json({message: "Customer successfully logged", status: 200, accessToken: tokenService.createToken({user_id: findUser.id, userAgent: req.headers['user-agent']})})
-                }
+            const admins = await fetchQuery(`SELECT * FROM users WHERE role_id = 1`);
+            const foundAdmin = admins.find(admin => admin.email == user.email && hashService.comparePassword(user.password, admin.password));
+            if(foundAdmin) return res.json({message: "Admin successfully logged", status: 200, accessToken: tokenService.createToken({user_id: foundAdmin.id, admin:true, userAgent: req.headers['user-agent']})});
 
-            } throw new ClientError('User not found', 404)
-            
+            const findUser = await fetchQuery("SELECT * FROM users WHERE email=?", true,  user.email);
+            if(!findUser && !(await hashService.comparePassword(user.password, findUser.password))) throw new ClientError("This user not found"); 
+            return res.json({message: "Customer successfully logged", status: 200, accessToken: tokenService.createToken({user_id: findUser.id, userAgent: req.headers['user-agent']})})
         } catch (error) {
             globalError(error, res);
         }
@@ -60,16 +56,28 @@ class AuthController {
         try {
             const id = req.params.id;
             const user = req.body;
-            const [[findUser]] = await db.query(`SELECT id FROM users WHERE id=?`, [id]);
+            let [[findUser]] = await db.query(`SELECT * FROM users WHERE id=?`, [id]);
             if(findUser) {
-                await db.query(`UPDATE users SET first_name = ?, last_name = ?, role_id = ? WHERE id = ?`, 
-                                [user.first_name,user.last_name, user.role_id, id]);
+                if(user.password) user.password = await hashService.createHash(user.password);
+                findUser = {...findUser,...user}
+                await db.query(`UPDATE users SET first_name = ?, last_name = ?, phone=?, email=?, password=? WHERE id = ?`, 
+                                [findUser.first_name, findUser.last_name, findUser.phone, findUser.email, findUser.password, findUser.id]);
                 return res.json({message: "User successfully updated"});
             } throw new ClientError('This user is not available');
         } catch (error) {
             globalError(error, res);
         }
     };
+
+    async GET_All(req, res){
+        try {
+            const [users] = await db.query('SELECT * FROM users');
+            res.json({message: "All users are here", status: 200, users});
+            
+        } catch (error) {
+            globalError(error, res)
+        }
+    }
 
     async ADD_ADMIN(req, res){
         try {

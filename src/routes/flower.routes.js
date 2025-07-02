@@ -5,7 +5,7 @@ import flowerController from "../controllers/flower.controller.js";
 
 export const flowerRouter = Router();
 
-flowerRouter.post('/create', checkToken, checkAdmin, flowerController.CREATE_FLOWER);
+flowerRouter.post('/create', flowerController.CREATE_FLOWER);
 // categoryRouter.delete('/delete/:id', checkToken, checkAdmin, categoryController.DELETE);
 // categoryRouter.put('/update/:id', checkToken, checkAdmin, categoryController.UPDATE);
 

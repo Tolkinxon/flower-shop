@@ -40,7 +40,7 @@ const password = Joi.string().max(50).min(3).required().messages({
     'any.required': 'Password is required' 
 });
 
-const role_id = Joi.string().valid('1', "2").required().messages({
+const role_id = Joi.number().valid(1, 2).required().messages({
     'any.only': 'Role must be either 1 (Admin) or 2 (Customer).',
     'any.required': 'Role is required field.',
     'string.base': 'Role must be a string.',

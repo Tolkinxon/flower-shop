@@ -5,15 +5,10 @@ class categoryController {
     async CREATE_CATEGORY(req, res){
         try {
             const category = req.body;
-            console.log(category);
-            
-       
             const [[findCategory]] = await db.query(`SELECT * FROM category WHERE name=?`, [category.name]);
             if(findCategory) throw new ClientError('This category already exists!');
-            
             const [categoryData] = await db.query(`INSERT INTO category(name) VALUES (?)`, [category.name]);
             res.json({message: 'Category successfully added', status: 201 });         
-            
         } catch (error) { 
             globalError(error, res);
         }
@@ -22,8 +17,6 @@ class categoryController {
     async DELETE(req, res){
         try {
             const id = req.params.id;
-            console.log(id);
-            
             const [[findCategory]] = await db.query(`SELECT id FROM category WHERE id=?`, [id]);
             if(findCategory) {
                 await db.query(`DELETE FROM category WHERE id = ?`, [id]);
