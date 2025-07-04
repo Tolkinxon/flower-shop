@@ -25,6 +25,9 @@ CREATE TABLE IF NOT EXISTS users(
     FOREIGN KEY(role_id) REFERENCES roles(id)    
 );
 
+ALTER TABLE users MODIFY role_id INT DEFAULT 2;
+
+
 INSERT INTO users(first_name, last_name, phone, email, password, role_id) VALUES
 ('Tolkinxon', 'Soliyev', '+998774779844', 'tolkinxon@gmail.com', 'tolkinxon123', 1);
 

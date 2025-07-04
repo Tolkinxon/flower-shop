@@ -7,7 +7,7 @@ export const authRouter = Router();
 
 authRouter.post('/register', authController.REGISTER);
 authRouter.post('/login', authController.LOGIN);
-authRouter.get('/get-all', authController.GET_All);
-authRouter.post('/admin',checkToken, checkAdmin, authController.ADD_ADMIN);
 authRouter.delete('/delete/:id', authController.DELETE);
 authRouter.put('/update/:id', authController.UPDATE);
+authRouter.get('/get-all', authController.GET_All);
+authRouter.post('/admin',checkToken, checkAdmin, authController.ADD_ADMIN);

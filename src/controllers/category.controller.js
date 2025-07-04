@@ -1,14 +1,17 @@
 import { ClientError, globalError } from "shokhijakhon-error-handler";
-import { db } from "../lib/connection.js";
+import { fetchQuery } from "../lib/connection.js";
+import { categoryValidator } from "../utils/validator.js";
 
 class categoryController {
     async CREATE_CATEGORY(req, res){
         try {
             const category = req.body;
-            const [[findCategory]] = await db.query(`SELECT * FROM category WHERE name=?`, [category.name]);
-            if(findCategory) throw new ClientError('This category already exists!');
-            const [categoryData] = await db.query(`INSERT INTO category(name) VALUES (?)`, [category.name]);
-            res.json({message: 'Category successfully added', status: 201 });         
+            const validate = categoryValidator.validate(category);
+            if(validate.error) throw new ClientError(validate.error.message, 404);
+            const findCategory = await fetchQuery(`SELECT * FROM category WHERE name=?`, true, category.name);
+            if(findCategory) throw new ClientError('This category already exists!', 404 );
+            const categoryData = await fetchQuery(`INSERT INTO category SET name=?;`,false, category.name);
+            res.status(201).json({message: 'Category successfully added', status: 201, categoryId: categoryData.insertId });         
         } catch (error) { 
             globalError(error, res);
         }
@@ -17,11 +20,10 @@ class categoryController {
     async DELETE(req, res){
         try {
             const id = req.params.id;
-            const [[findCategory]] = await db.query(`SELECT id FROM category WHERE id=?`, [id]);
-            if(findCategory) {
-                await db.query(`DELETE FROM category WHERE id = ?`, [id]);
-                return res.json({message: "Category successfully deleted", status:200});
-            } throw new ClientError('This category not found', 404);
+            const findCategory = await fetchQuery(`SELECT id FROM category WHERE id=?`,false, id);
+            if(!findCategory) throw new ClientError('This category not found', 404);
+            await fetchQuery(`DELETE FROM category WHERE id = ?`, false, id);
+            return res.json({message: "Category successfully deleted", status:200});
         } catch (error) {
             globalError(error, res);
         }
@@ -31,11 +33,10 @@ class categoryController {
         try {
             const id = req.params.id;
             const category = req.body;
-            const [[findCategory]] = await db.query(`SELECT * FROM category WHERE id=?`, [id]);
-            if(findCategory) {
-                await db.query(`UPDATE category SET name=? WHERE id = ?`, [category.name, id]);
-                return res.json({message: "Category successfully updated"});
-            } throw new ClientError('This category is not found');
+            const findCategory = await fetchQuery(`SELECT * FROM category WHERE id=?`, true, id);
+            if(!findCategory) throw new ClientError('This category is not found');
+            await fetchQuery(`UPDATE category SET name=? WHERE id = ?`,false, category.name, id);
+            return res.json({message: "Category successfully updated", status: 200});
         } catch (error) {
             globalError(error, res);
         }

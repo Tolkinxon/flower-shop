@@ -40,15 +40,23 @@ const password = Joi.string().max(50).min(3).required().messages({
     'any.required': 'Password is required' 
 });
 
-const role_id = Joi.number().valid(1, 2).required().messages({
+const role_id = Joi.number().valid(1, 2).messages({
     'any.only': 'Role must be either 1 (Admin) or 2 (Customer).',
-    'any.required': 'Role is required field.',
     'string.base': 'Role must be a string.',
+});
+
+const name = Joi.string().max(100).min(3).required().messages({
+    'string.base': 'Category name must be a string.',
+    'string.empty': 'Category name can not be a empty.',
+    'string.min': 'Category name must be at least 3 characters long.',
+    'string.max': 'Category name must be no longer than 100 characters.',
+    'any.required': 'Category name is required' 
 });
 
 
 const userValidator = Joi.object({ last_name, first_name, email, password, role_id, phone });
 const loginValidator = Joi.object({ email, password });
-export { userValidator, loginValidator };
+const categoryValidator = Joi.object({ name });
+export { userValidator, loginValidator, categoryValidator };
 
 

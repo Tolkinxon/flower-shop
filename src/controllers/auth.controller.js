@@ -1,5 +1,5 @@
 import { ClientError, globalError } from "shokhijakhon-error-handler";
-import { db, fetchQuery } from "../lib/connection.js";
+import { fetchQuery } from "../lib/connection.js";
 import { tokenService } from "../lib/tokenService.js";
 import { hashService } from "../lib/hash.js";
 import { loginValidator, userValidator } from "../utils/validator.js";
@@ -10,11 +10,14 @@ class AuthController {
             const newUser = req.body;
             const validator = userValidator.validate(newUser, {abortEarly: true});
             if(validator.error) throw new ClientError(validator.error.message, 400);
-            const [[findUser]] = await db.query(`SELECT email FROM users WHERE email=?`, [newUser.email]);
+            const findUser = await fetchQuery(`SELECT email FROM users WHERE email=?`,true, newUser.email);
             if(findUser) throw new ClientError('This user already exists!');
-            
-            const [userData] = await db.query(`INSERT INTO users(first_name, last_name, phone, email, password, role_id) VALUES (?,?,?,?,?,?)`, 
-                  [newUser.first_name, newUser.last_name, newUser.phone, newUser.email, await hashService.createHash(newUser.password), newUser.role_id]);
+
+            if(newUser.role_id && newUser.role_id == 1) throw new ClientError('Forbidden !', 403);
+            newUser.password = await hashService.createHash(newUser.password)
+            newUser.role_id = newUser.role_id || 2;
+            const userData = await fetchQuery(`INSERT INTO users(first_name, last_name, phone, email, password, role_id) VALUES (?,?,?,?,?,?)`, false,
+                  newUser.first_name, newUser.last_name, newUser.phone, newUser.email, newUser.password, newUser.role_id);
             res.json({message: 'User successfully added', status: 201, accessToken: tokenService.createToken({user_id:userData.insertId, userAgent: req.headers['user-agent']})});         
             
         } catch (error) { 
@@ -42,9 +45,9 @@ class AuthController {
     async DELETE(req, res){
         try {
             const id = req.params.id;
-            const [[findUser]] = await db.query(`SELECT id FROM users WHERE id=?`, [id]);
+            const findUser = await fetchQuery(`SELECT id FROM users WHERE id=?`,false, id);
             if(findUser) {
-                await db.query(`DELETE FROM users WHERE id = ?`, [id]);
+                await fetchQuery(`DELETE FROM users WHERE id = ?`, false,id);
                 return res.json({message: "User successfully deleted"});
             } throw new ClientError('This user is not available');
         } catch (error) {
@@ -56,12 +59,12 @@ class AuthController {
         try {
             const id = req.params.id;
             const user = req.body;
-            let [[findUser]] = await db.query(`SELECT * FROM users WHERE id=?`, [id]);
+            let findUser = await fetchQuery(`SELECT * FROM users WHERE id=?`,true, id);
             if(findUser) {
                 if(user.password) user.password = await hashService.createHash(user.password);
                 findUser = {...findUser,...user}
-                await db.query(`UPDATE users SET first_name = ?, last_name = ?, phone=?, email=?, password=? WHERE id = ?`, 
-                                [findUser.first_name, findUser.last_name, findUser.phone, findUser.email, findUser.password, findUser.id]);
+                await fetchQuery(`UPDATE users SET first_name = ?, last_name = ?, phone=?, email=?, password=? WHERE id = ?`, false, 
+                                findUser.first_name, findUser.last_name, findUser.phone, findUser.email, findUser.password, findUser.id);
                 return res.json({message: "User successfully updated"});
             } throw new ClientError('This user is not available');
         } catch (error) {
@@ -71,7 +74,7 @@ class AuthController {
 
     async GET_All(req, res){
         try {
-            const [users] = await db.query('SELECT * FROM users');
+            const users = await fetchQuery('SELECT * FROM users');
             res.json({message: "All users are here", status: 200, users});
             
         } catch (error) {
@@ -84,13 +87,12 @@ class AuthController {
             const newUser = req.body;
             const validator = userValidator.validate(newUser, {abortEarly: true});
             if(validator.error) throw new ClientError(validator.error.message, 400);
-            const [[findUser]] = await db.query(`SELECT email FROM users WHERE email=?`, [newUser.email]);
+            if(!(newUser.role-id && newUser.role_id == 2)) throw new ClientError("Forbidden !", 403);
+            const findUser = await fetchQuery(`SELECT email FROM users WHERE email=?`, true, newUser.email);
             if(findUser) throw new ClientError('This user already exists!');
-            
-            const [userData] = await db.query(`INSERT INTO users(first_name, last_name, phone, email, password, role_id) VALUES (?,?,?,?,?,?)`, 
-                  [newUser.first_name, newUser.last_name, newUser.phone, newUser.email, await hashService.createHash(newUser.password), newUser.role_id]);
-            res.json({message: 'User successfully added', status: 201, accessToken: tokenService.createToken({user_id:userData.insertId, userAgent: req.headers['user-agent']})});         
-            
+            const userData = await fetchQuery(`INSERT INTO users(first_name, last_name, phone, email, password, role_id) VALUES (?,?,?,?,?,?)`, false, 
+                  newUser.first_name, newUser.last_name, newUser.phone, newUser.email, await hashService.createHash(newUser.password), newUser.role_id);
+            res.json({message: 'Admin successfully added', status: 201, accessToken: tokenService.createToken({user_id:userData.insertId, userAgent: req.headers['user-agent']})});         
         } catch (error) { 
             globalError(error, res);
         }
