@@ -37,6 +37,16 @@ CREATE TABLE IF NOT EXISTS category(
     PRIMARY KEY(id)
 );
 
+TRUNCATE category;
+
+ALTER TABLE flowers DROP FOREIGN KEY flowers_ibfk_1;
+ALTER TABLE flowers
+ADD CONSTRAINT flowers_ibfk_1
+FOREIGN KEY (category_id)
+REFERENCES category(id)
+ON DELETE CASCADE;
+
+
 CREATE TABLE IF NOT EXISTS flowers(
     id INT AUTO_INCREMENT NOT NULL,
     name VARCHAR(255) NOT NULL,
@@ -46,7 +56,7 @@ CREATE TABLE IF NOT EXISTS flowers(
     image_path TEXT NOT NULL,
     import_from VARCHAR(255) NOT NULL,
     is_active BOOLEAN DEFAULT false,
-    update_img_id INT,
+    update_img_id INT NOT NULL,
     description TEXT NOT NULL,
     count int DEFAULT 0 NOT NULL,
     PRIMARY KEY(id),

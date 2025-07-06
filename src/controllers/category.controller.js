@@ -17,6 +17,21 @@ class categoryController {
         }
     };
 
+    async GET_CATEGORY(req, res){
+        try {
+            const id = req.params.id;
+            if(id){
+                const category = await fetchQuery('SELECT * FROM category WHERE id=?', true, id);
+                if(!category) throw new ClientError('Category not found!', 404);
+                res.json(category)
+            }
+            const categories = await fetchQuery('SELECT * FROM category');
+            res.json(categories);
+        } catch (error) {
+            globalError(error, res);
+        }
+    }
+
     async DELETE(req, res){
         try {
             const id = req.params.id;
@@ -35,6 +50,10 @@ class categoryController {
             const category = req.body;
             const findCategory = await fetchQuery(`SELECT * FROM category WHERE id=?`, true, id);
             if(!findCategory) throw new ClientError('This category is not found');
+            const validate = categoryValidator.validate(category);
+            if(validate.error) throw new ClientError(validate.error.message, 404);
+            const findCategoryByName = await fetchQuery(`SELECT * FROM category WHERE name=?`, true, category.name);
+            if(findCategoryByName) throw new ClientError("This category alredy exists", 400);
             await fetchQuery(`UPDATE category SET name=? WHERE id = ?`,false, category.name, id);
             return res.json({message: "Category successfully updated", status: 200});
         } catch (error) {
