@@ -44,6 +44,19 @@ async CREATE_ORDER(req, res) {
       return globalError(err, res);
     }
   }
+  async ORDER_CANCEL(req, res){
+    try{
+        let {id} = req.params;
+        console.log(id, req.user_id);
+        
+        let findOrder = await fetchQuery(`SELECT * FROM orders WHERE id=? AND customer_id=?`, true, id, req.user_id);
+        if(!findOrder) throw new ClientError('Order not found', 404);
+        await fetchQuery(`UPDATE orders SET status_id=? WHERE id=? AND customer_id=?`, false, 3, id, req.user_id);
+        return res.json({message: "Order successfully cenceled !", status: 200});
+    }catch(err){
+        return globalError(err, res);
+    }
+  }
 }
 
 

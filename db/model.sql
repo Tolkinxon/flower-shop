@@ -121,3 +121,14 @@ CREATE TABLE IF NOT EXISTS order_details(
 
 SELECT a.name, a.region, a.city, a.street, CONCAT(U.first_name, " ", u.last_name) as customer_full_name  FROM address a
 INNER JOIN users u ON u.id=a.customer_id WHERE a.id = 1 AND a.customer_id=1;
+
+CREATE TABLE IF NOT EXISTS payments(
+    id INT AUTO_INCREMENT NOT NULL,
+    order_id INT NOT NULL,
+    paid_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY(id),
+    FOREIGN KEY(order_id) REFERENCES orders(id)
+    ON DELETE CASCADE 
+);
+
+ALTER TABLE payments ADD COLUMN amount INT NOT NULL;

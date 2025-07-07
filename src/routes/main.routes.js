@@ -5,6 +5,7 @@ import { flowerRouter } from './flower.routes.js';
 import checkToken from '../middlewares/chekToken.js';
 import { addressRouter } from './address.routes.js';
 import { orderRouter } from './order.routes.js';
+import { paymentRouter } from './payment.routes.js';
 
 export const mainRouter = Router();
 
@@ -14,4 +15,5 @@ mainRouter.use('/category', categoryRouter);
 mainRouter.use('/flower', flowerRouter);
 mainRouter.use('/address', addressRouter);
 mainRouter.use('/order', orderRouter);
+mainRouter.use('/payment', paymentRouter);
  
