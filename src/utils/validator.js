@@ -211,3 +211,26 @@ export const createAddressValidator = (updateData) => {
   if ("street" in updateData) rules.street = street;
   return Joi.object(rules);
 };
+
+export const addressIdValidator = Joi.object({
+    address_id: Joi.number().integer().positive().required().messages({
+    "number.base": "Address ID must be a number.",
+    "number.integer": "Address ID must be an integer.",
+    "number.positive": "Address ID must be a positive number.",
+    "any.required": "Address ID is required."
+  })
+})
+
+export const orderItemValidator = Joi.object({
+  flower_id: Joi.number().integer().positive().required().messages({
+    "number.base": "Flower ID must be a number.",
+    "number.integer": "Flower ID must be an integer.",
+    "number.positive": "Flower ID must be a positive number.",
+    "any.required": "Flower ID is required."
+  }),
+  quantity: Joi.number().integer().min(1).required().messages({
+    "number.base": "quantity must be a number.",
+    "number.integer": "quantity must be an integer.",
+    "any.required": "quantity is required."
+  })
+})

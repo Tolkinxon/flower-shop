@@ -20,17 +20,21 @@ export const fetchQuery = async (query, type=false, ...params) => {
     }
 }
 
-export const transaction = async (callback) => {
-    let conn = db.getConnection();
-    try {
+export const transaction = async (callback, res) => {
+    const conn = await db.getConnection();
+    try{
         await conn.beginTransaction();
-        let result = await callback(conn);
+        const result = await callback(conn);
         await conn.commit();
-        return result;    
-    } catch (error) {
-        if(error.code = "PROTOCOL_CONNECTION_LOST" || error.fatal) {console.log('DB FATAL ERROR',    error);  return db.destroy();}
-        else console.log("DB error", error);  
-        conn.rollback();
-     }
-    finally { conn.release(); }      
-}
+        return result;
+    }catch(err){
+        if(err.code == "PROTOCOL_CONNECTION_LOST" || err.fatal){
+            console.log("DB connection error:", err.message)
+            return db.destroy()
+        } else console.log("DB error", err.message)
+        await conn.rollback();
+        return res.status(err.status).json({message: err.message, status: err.status})
+    }finally{
+        conn.release();
+    }
+};

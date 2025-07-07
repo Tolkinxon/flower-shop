@@ -45,6 +45,8 @@ class FlowerController {
             const id = req.params.id;
             let flower = req.body;
             flower = {...flower};
+            flower.count = Number(flower.count);
+            
             const findFlower = await fetchQuery(`SELECT * FROM flowers WHERE id=?`, true, id);
             if(!findFlower) throw new ClientError("Not found!", 404);
             const makeValidator = createFlowerValidator(flower);

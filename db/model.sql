@@ -78,11 +78,16 @@ CREATE TABLE IF NOT EXISTS address(
     ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS stasuses(
+CREATE TABLE IF NOT EXISTS statuses(
     id INT AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     PRIMARY KEY(id)
 );
+
+INSERT INTO statuses (name) VALUES
+('pending'),
+('success'),
+('cancel');
 
 CREATE TABLE IF NOT EXISTS orders(
     id INT AUTO_INCREMENT,
@@ -90,13 +95,17 @@ CREATE TABLE IF NOT EXISTS orders(
     total_price INT NOT NULL,
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     address_id INT NOT NULL,
-    status INT NOT NULL,
+    status_id INT NOT NULL,
     PRIMARY KEY(id),
     FOREIGN KEY(customer_id) REFERENCES users(id)
     ON DELETE CASCADE,
     FOREIGN KEY(address_id) REFERENCES address(id)
+    ON DELETE CASCADE,
+    FOREIGN KEY(status_id) REFERENCES statuses(id)
     ON DELETE CASCADE
 );
+
+
 CREATE TABLE IF NOT EXISTS order_details(
   id INT AUTO_INCREMENT,
   order_id INT NOT NULL,
