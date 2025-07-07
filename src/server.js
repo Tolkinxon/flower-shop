@@ -12,7 +12,7 @@ cron.schedule('30 23 * * 1', async () => {
     console.log('🧹 Cron ishga tushdi: payments va orders tozalanmoqda...');
 
     await fetchQuery('DELETE FROM payments WHERE paid_date < NOW() - INTERVAL 7 DAY;');
-    await fetchQuery('DELETE FROM orders WHERE order_date < NOW() - INTERVAL 7 DAY;');
+    await fetchQuery('DELETE FROM orders WHERE order_date < NOW() - INTERVAL 7 DAY AND status_id = 3;');
 
     console.log("✅ Ma'lumotlar muvaffaqiyatli o'chirildi!");
   } catch (error) {
