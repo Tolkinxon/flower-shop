@@ -56,9 +56,12 @@ CREATE TABLE IF NOT EXISTS flowers(
     image_path TEXT NOT NULL,
     import_from VARCHAR(255) NOT NULL,
     is_active BOOLEAN DEFAULT false,
-    update_img_id INT NOT NULL,
+    public_id TEXT NOT NULL,
     description TEXT NOT NULL,
     count int DEFAULT 0 NOT NULL,
     PRIMARY KEY(id),
     FOREIGN KEY(category_id) REFERENCES category(id) 
 );
+
+SELECT f.name, f.description, f.import_from, f.color, f.price, f.count, c.name as category_name FROM flowers f
+LEFT JOIN category c ON f.category_id=c.id;

@@ -12,7 +12,7 @@ export let flowerImageStorage = new CloudinaryStorage({
     cloudinary: cloudinaryV2,
     params:{
         allowedFormats: ["jpeg", "png", "jpg"],
-        folder: "Flowers"
+        folder: "Flower_shop/Flower_images"
     }
 })
  

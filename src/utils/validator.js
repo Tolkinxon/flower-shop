@@ -45,6 +45,8 @@ const role_id = Joi.number().valid(1, 2).messages({
     'string.base': 'Role must be a string.',
 });
 
+// Categories validate side
+
 const name = Joi.string().max(100).min(3).required().messages({
     'string.base': 'Category name must be a string.',
     'string.empty': 'Category name can not be a empty.',
@@ -53,7 +55,7 @@ const name = Joi.string().max(100).min(3).required().messages({
     'any.required': 'Category name is required' 
 });
 
-///////////////////////////
+// Flowers validate side
 let name_flower = Joi.string()
   .max(255)
   .required()
@@ -96,16 +98,6 @@ let category_id = Joi.number()
     "any.required": "Category ID is required.",
   })
 
-  let update_img_id = Joi.number()
-  .integer()
-  .positive()
-  .required()
-  .messages({
-    "number.base": "Category update img ID must be a number.",
-    "number.integer": "Category update img ID must be an integer.",
-    "number.positive": "Category update img ID must be a positive number.",
-    "any.required": "Category update img ID is required.",
-  })
 
 let image_path =  Joi.string()
   .uri({ allowRelative: true }) 
@@ -145,7 +137,7 @@ let count = Joi.number()
     "number.integer": "Count must be an integer.",
     "number.min": "Count cannot be negative.",
   })
-export const flowerValidator = Joi.object({name:name_flower, color, price, category_id, image_path, import_from, is_active, description, count, update_img_id });
+const flowerValidator = Joi.object({name:name_flower, color, price, category_id, image_path, import_from, is_active, description, count });
 
 export const createFlowerValidator = (updateData) => {
   let validator = {};
@@ -153,7 +145,6 @@ export const createFlowerValidator = (updateData) => {
   if(updateData.hasOwnProperty("color")) validator.color = color;
   if(updateData.hasOwnProperty("price")) validator.price = price;
   if(updateData.hasOwnProperty("category_id")) validator.category_id = category_id;
-  if(updateData.hasOwnProperty("update_img_id")) validator.update_img_id = update_img_id;
   if(updateData.hasOwnProperty("image_path")) validator.image_path = image_path;
   if(updateData.hasOwnProperty("import_from")) validator.import_from = import_from;
   if(updateData.hasOwnProperty("is_active")) validator.is_active = is_active;
@@ -166,6 +157,6 @@ export const createFlowerValidator = (updateData) => {
 const userValidator = Joi.object({ last_name, first_name, email, password, role_id, phone });
 const loginValidator = Joi.object({ email, password });
 const categoryValidator = Joi.object({ name });
-export { userValidator, loginValidator, categoryValidator };
+export { userValidator, loginValidator, categoryValidator, flowerValidator };
 
 

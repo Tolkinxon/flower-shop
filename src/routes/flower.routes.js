@@ -1,11 +1,11 @@
 import { Router } from "express";
-import checkToken from "../middlewares/chekToken.js";
 import { checkAdmin } from "../middlewares/checkAdmin.js";
 import flowerController from "../controllers/flower.controller.js";
+import { flowerImageUpload } from "../lib/storage.js";
 
 export const flowerRouter = Router();
 
-flowerRouter.post('/create', flowerController.CREATE_FLOWER);
-// categoryRouter.delete('/delete/:id', checkToken, checkAdmin, categoryController.DELETE);
-// categoryRouter.put('/update/:id', checkToken, checkAdmin, categoryController.UPDATE);
+flowerRouter.post('/create', checkAdmin, flowerImageUpload.single('image_path'), flowerController.CREATE_FLOWER);
+flowerRouter.get('/all', flowerController.GET_FLOWER);
+flowerRouter.route('/:id').get(flowerController.GET_FLOWER).put(checkAdmin,flowerImageUpload.single('image_path'), flowerController.UPDATE).delete(checkAdmin, flowerController.DELETE);
 
