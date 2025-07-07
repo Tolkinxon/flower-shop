@@ -160,3 +160,54 @@ const categoryValidator = Joi.object({ name });
 export { userValidator, loginValidator, categoryValidator, flowerValidator };
 
 
+// address validatord
+const addressName = Joi.string().required().max(500).messages({
+  "string.base": "Name must be a string.",
+  "string.empty": "Name cannot be empty.",
+  "any.required": "Name is required.",
+  "string.max": "Name must not exceed 500 characters."
+});
+
+const customer_id = Joi.number().integer().positive().required().messages({
+  "number.base": "Customer ID must be a number.",
+  "number.integer": "Customer ID must be an integer.",
+  "number.positive": "Customer ID must be a positive number.",
+  "any.required": "Customer ID is required."
+});
+
+const region = Joi.string().required().max(255).messages({
+  "string.base": "Region must be a string.",
+  "string.empty": "Region cannot be empty.",
+  "any.required": "Region is required.",
+  "string.max": "Region must not exceed 255 characters."
+});
+
+const city = Joi.string().required().max(255).messages({
+  "string.base": "City must be a string.",
+  "string.empty": "City cannot be empty.",
+  "any.required": "City is required.",
+  "string.max": "City must not exceed 255 characters."
+});
+
+const street = Joi.string().required().max(255).messages({
+  "string.base": "Street must be a string.",
+  "string.empty": "Street cannot be empty.",
+  "any.required": "Street is required.",
+  "string.max": "Street must not exceed 255 characters."
+});
+
+export const addressValidator = Joi.object({
+  name: addressName,
+  region,
+  city,
+  street
+});
+
+export const createAddressValidator = (updateData) => {
+  const rules = {};
+  if ("name" in updateData) rules.name = addressName;
+  if ("region" in updateData) rules.region = region;
+  if ("city" in updateData) rules.city = city;
+  if ("street" in updateData) rules.street = street;
+  return Joi.object(rules);
+};

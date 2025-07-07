@@ -65,3 +65,50 @@ CREATE TABLE IF NOT EXISTS flowers(
 
 SELECT f.name, f.description, f.import_from, f.color, f.price, f.count, c.name as category_name FROM flowers f
 LEFT JOIN category c ON f.category_id=c.id;
+
+CREATE TABLE IF NOT EXISTS address(
+    id INT AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    customer_id INT NOT NULL,
+    region VARCHAR(255) NOT NULL,
+    city VARCHAR(255) NOT NULL,
+    street VARCHAR(255) NOT NULL,
+    PRIMARY KEY(id),
+    FOREIGN KEY(customer_id) REFERENCES users(id) 
+    ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS stasuses(
+    id INT AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    PRIMARY KEY(id)
+);
+
+CREATE TABLE IF NOT EXISTS orders(
+    id INT AUTO_INCREMENT,
+    customer_id INT NOT NULL,
+    total_price INT NOT NULL,
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    address_id INT NOT NULL,
+    status INT NOT NULL,
+    PRIMARY KEY(id),
+    FOREIGN KEY(customer_id) REFERENCES users(id)
+    ON DELETE CASCADE,
+    FOREIGN KEY(address_id) REFERENCES address(id)
+    ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS order_details(
+  id INT AUTO_INCREMENT,
+  order_id INT NOT NULL,
+  flower_id INT NOT NULL,
+  quantity INT NOT NULL CHECK(quantity > 0),
+  PRIMARY KEY(id),
+  FOREIGN KEY(order_id) REFERENCES orders(id) 
+  ON DELETE CASCADE,
+  FOREIGN KEY(flower_id) REFERENCES flowers(id)
+  ON DELETE CASCADE
+);
+
+
+SELECT a.name, a.region, a.city, a.street, CONCAT(U.first_name, " ", u.last_name) as customer_full_name  FROM address a
+INNER JOIN users u ON u.id=a.customer_id WHERE a.id = 1 AND a.customer_id=1;

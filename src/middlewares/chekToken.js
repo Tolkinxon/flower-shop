@@ -13,6 +13,7 @@ import { db } from "../lib/connection.js";
         if(!user) throw new ClientError('Unauthorized!', 401);
         if(user.role_id == 1) req.admin = true;
         else {req.admin = false;}
+        req.user_id = verifiyToken.user_id;
         return next();
     } catch (error) {
         globalError(error, res);        
